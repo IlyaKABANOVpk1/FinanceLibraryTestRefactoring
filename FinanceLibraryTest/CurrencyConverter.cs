@@ -11,7 +11,7 @@ namespace FinanceLibraryTest
         private readonly ICurrencyRateProvider _rateProvider;
         private const string BaseCurrency = "USD";
 
-        internal CurrencyConverter(ICurrencyRateProvider rateProvider)
+        public CurrencyConverter(ICurrencyRateProvider rateProvider)
         {
             _rateProvider = rateProvider ?? throw new ArgumentNullException(nameof(rateProvider));
         }

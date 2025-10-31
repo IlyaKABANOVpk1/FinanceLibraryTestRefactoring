@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FinanceLibraryTest
 {
-    internal interface ICurrencyRateProvider
+    public interface ICurrencyRateProvider
     {
         IReadOnlyDictionary<string, double> GetCurrentRates();
         IEnumerable<(DateTime Date, string Currency, double Rate)> GetRatesHistory();
