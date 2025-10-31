@@ -1,41 +1,45 @@
-﻿namespace FinanceLibraryTest
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace FinanceLibraryTest
 {
-    public class CreditCalculator
+    public class CreditCalculator : ICreditCalculator
     {
-        
-        public double CalcMonthlyPayment(double amount, double rate, int months)
+        public double CalculateMonthlyPayment(CreditParameters parameters)
         {
-            
-            double r = rate / 12 / 100;
-            double m = months;
-            double pay = amount * r * Math.Pow(1 + r, m) / (Math.Pow(1 + r, m) - 1);
-            return pay;
+            double r = parameters.AnnualRate / 12 / 100;
+            if (Math.Abs(r) < double.Epsilon) return parameters.Amount / parameters.Months;
+
+            double power = Math.Pow(1 + r, parameters.Months);
+            return parameters.Amount * r * power / (power - 1);
         }
 
-        
-        public double CalcOverpay(double amount, double rate, int months)
+        public double CalculateTotalOverpayment(CreditParameters parameters)
         {
-            double monthly = CalcMonthlyPayment(amount, rate, months);
-            double total = monthly * months;
-            double overpay = total - amount;
-            return overpay;
+            double monthly = CalculateMonthlyPayment(parameters);
+            double totalPaid = monthly * parameters.Months;
+            return totalPaid - parameters.Amount;
         }
 
-        
-        public void PaymentSchedule(double amount, double rate, int months)
+        public IReadOnlyList<PaymentScheduleRow> GeneratePaymentSchedule(CreditParameters parameters)
         {
-            double monthly = CalcMonthlyPayment(amount, rate, months);
-            double remaining = amount;
+            var schedule = new List<PaymentScheduleRow>();
+            double monthly = CalculateMonthlyPayment(parameters);
+            double remaining = parameters.Amount;
 
-            Console.WriteLine("Месяц\tПлатеж\tОсновной долг\tПроценты\tОстаток");
-            for (int i = 1; i <= months; i++)
+            for (int i = 1; i <= parameters.Months; i++)
             {
-                double interest = remaining * rate / 12 / 100;
+                double interest = remaining * parameters.AnnualRate / 12 / 100;
                 double principal = monthly - interest;
                 remaining -= principal;
 
-                Console.WriteLine($"{i}\t{monthly:F2}\t{principal:F2}\t{interest:F2}\t{remaining:F2}");
+                schedule.Add(new PaymentScheduleRow(i, monthly, principal, interest, remaining));
             }
+
+            return schedule;
         }
     }
 }
