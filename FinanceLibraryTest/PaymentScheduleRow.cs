@@ -10,6 +10,7 @@ namespace FinanceLibraryTest
     {
         public int Month { get; }
         public double Payment { get; }
+        
         public double Principal { get; }
         public double Interest { get; }
         public double RemainingBalance { get; }
